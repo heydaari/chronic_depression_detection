@@ -82,13 +82,13 @@ Data has two parts , text and class . text is the original post collected from r
 
 The model architecture consists of the following layers:
 
-**Embedding Layer :** Maps input words to dense vector space.
+[**Embedding Layer**](https://www.dremio.com/wiki/embedding-layer/#:~:text=What%20is%20Embedding%20Layer%3F,between%20different%20categories%20or%20classes.) : Maps input words to dense vector space.
 
-**Bidirectional LSTM Layers :** Processes input sequences in both forward and backward directions.
+[**Bidirectional LSTM Layers**](https://colah.github.io/posts/2015-08-Understanding-LSTMs/): Processes input sequences in both forward and backward directions.
 
-**Dropout Layers :** Regularization technique to prevent overfitting.
+[**Dropout Layers**](https://keras.io/api/layers/regularization_layers/dropout/#:~:text=The%20Dropout%20layer%20randomly%20sets,over%20all%20inputs%20is%20unchanged.) : Regularization technique to prevent overfitting.
 
-**Dense Layers :** Fully connected layers with various activation functions.
+[**Dense Layers**](https://keras.io/api/layers/core_layers/dense/) : Fully connected layers with various activation functions.
 ## Related Projects
 
 Here are some related text classification projects in my profile 
