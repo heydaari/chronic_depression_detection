@@ -3,18 +3,17 @@
 # Importing necessary libraries
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, LSTM, Bidirectional, Embedding
+from keras.layers import Dense, Dropout, LSTM, Bidirectional, Embedding, Input, Concatenate
 import pandas as pd
 from keras.preprocessing.text import Tokenizer
 from keras.utils import pad_sequences
+from tensorflow.keras.models import Model
 
 def data_preprocessing(path): # path is the path to the dataset
     data = pd.read_csv(path)
 
 
     texts, labels = list(data['text']), list(data['class']) # extracting texts and labels from the pandas dataframe
-
-    del data # deleting the data variable to free up some memory
 
 
     tokenizer = Tokenizer(num_words=10000, oov_token='<OOV>', lower=True) # creating a tokenizer object
@@ -25,36 +24,38 @@ def data_preprocessing(path): # path is the path to the dataset
 
     x_train, y_train = np.array(padded), np.array(labels) # converting the padded sequences and labels to numpy arrays
 
-    del padded, sequences, labels, tokenizer # deleting the variables to free up some memory
-
-    return x_train[:20000], y_train[:20000] # returning the training data
+    return x_train , y_train # returning the training data
 
 
 
 # load data
 x_train, y_train = data_preprocessing('data/chronic_depression.csv')
 
+#Model : using tf.keras functional API to create more flexible architecture
 
-model = Sequential([
-    Embedding(input_dim=10000, output_dim=16, input_length=100), # embedding layer to convert the sequences to vectors that can be fed to the LSTM layer
-    Bidirectional(LSTM(units = 256, return_sequences=True, activation='tanh')), # Bidirectional LSTM layer which is a type of LSTM layer that takes into account the past and the future
-    Dropout(0.2), # dropout layer to prevent overfitting
-    Bidirectional(LSTM(units = 64, return_sequences=False, activation='tanh')), # Bidirectional LSTM layer which is a type of LSTM layer that takes into account the past and the future
-    Dropout(0.1), # dropout layer to prevent overfitting
-    Flatten(), # flattening the output of the LSTM layer
-    Dense(units = 256, activation='relu'), # dense layer with 256 neurons
-    Dropout(0.2), # dropout layer to prevent overfitting
-    Dense(units = 128, activation='relu'), # dense layer with 128 neurons
-    Dropout(0.1), # dropout layer to prevent overfitting
-    Dense(units=32, activation='relu'), # dense layer with 32 neurons
-    Dropout(0.2), # dropout layer to prevent overfitting
-    Dense(units = 1, activation='sigmoid') # dense layer with 1 neuron and sigmoid activation function to get the output
-])
+input_layer = Input(shape=(100,))
 
+embedding_layer = Embedding(input_dim=10000, output_dim=16, input_length=100)(input_layer)
+lstm1 = Bidirectional(LSTM(units = 128, return_sequences=True, activation='tanh'))(embedding_layer) # LSTM recurrent layer
+dropout = Dropout(0.2)(lstm1)
+lstm2 = Bidirectional(LSTM(units = 64, return_sequences=False, activation='tanh'))(dropout)
+dense1 = Dense(256, activation='relu')(lstm2)
+dense2_1 = Dense(32, activation='elu')(dense1)
+dense2_2 = Dense(32, activation='tanh')(dense1)
+dense2_3 = Dense(32, activation='relu')(dense1)
+merge = Concatenate()([dense2_1, dense2_2, dense2_3]) # merging three parallel densley connected layers
+dense3 = Dense(64, activation='relu')(merge)
+
+predictions = Dense(1, activation='sigmoid')(dense3)
+
+
+
+
+model = Model(inputs = input_layer, outputs = predictions)
 print(model.summary()) # printing the summary of the model which shows the layers and the number of parameters in each layer
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']) # compiling the model , details : https://keras.io/api/models/model_training_apis/#compile-method
-history = model.fit(x_train, y_train, epochs=3) # training the model , details : https://keras.io/api/models/model_training_apis/#fit-method
+history = model.fit(x_train, y_train, epochs=10) # training the model , details : https://keras.io/api/models/model_training_apis/#fit-method
 
-model.save('model/suicide_detection.h5')
+model.save('model/DD_rnn_parallel.h5')
 
