@@ -2,7 +2,6 @@
 
 # Importing necessary libraries
 import numpy as np
-from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM, Bidirectional, Embedding, Input, Concatenate
 import pandas as pd
 from keras.preprocessing.text import Tokenizer
@@ -11,7 +10,6 @@ from tensorflow.keras.models import Model
 
 def data_preprocessing(path): # path is the path to the dataset
     data = pd.read_csv(path)
-
 
     texts, labels = list(data['text']), list(data['class']) # extracting texts and labels from the pandas dataframe
 
@@ -23,6 +21,8 @@ def data_preprocessing(path): # path is the path to the dataset
     padded = pad_sequences(sequences, maxlen=100, truncating='post', padding='post') # padding the sequences
 
     x_train, y_train = np.array(padded), np.array(labels) # converting the padded sequences and labels to numpy arrays
+
+
 
     return x_train , y_train # returning the training data
 
