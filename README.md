@@ -73,7 +73,7 @@ Long-Term Dependencies: LSTMs excel at capturing dependencies in sequences that 
 *Speech Recognition :* LSTMs have been applied to speech recognition systems, where they help in understanding and transcribing spoken language with high accuracy.
 ## Data
 
-We use the *50000* posts on *Reddit* where posted between 2009 to 2021 . The original dataset is on Kaggle . For better descriptions chack the this [Link](https://www.kaggle.com/datasets/nikhileswarkomati/suicide-watch)
+We use the *50000* posts on *Reddit* where posted between 2009 to 2021 . The original dataset is on Kaggle . For better descriptions check the this [Link](https://www.kaggle.com/datasets/nikhileswarkomati/suicide-watch)
 
 
 
